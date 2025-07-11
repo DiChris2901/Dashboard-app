@@ -13,6 +13,13 @@ import {
   InputLabel,
 } from "@mui/material";
 import { useThemeMode } from "../contexts/ThemeContext";
+import { useAuth } from "../contexts/AuthContext";
+import {
+  reauthenticateWithCredential,
+  EmailAuthProvider,
+  updatePassword,
+} from "firebase/auth";
+import { auth } from "../firebase";
 
 const TabPanel = ({ children, value, index }) => {
   return value === index ? (
@@ -32,9 +39,35 @@ const Configuracion = () => {
     fontFamily,
     updateFontFamily,
   } = useThemeMode();
+  const { user } = useAuth();
 
   const handleChange = (event, newValue) => {
     setTabIndex(newValue);
+  };
+
+  const handleChangePassword = async () => {
+    const current = document.getElementById("currentPassword").value;
+    const newPass = document.getElementById("newPassword").value;
+    const confirm = document.getElementById("confirmPassword").value;
+    const feedback = document.getElementById("passwordFeedback");
+
+    feedback.textContent = "";
+
+    if (newPass !== confirm) {
+      feedback.textContent = "Las contraseñas nuevas no coinciden.";
+      return;
+    }
+
+    try {
+      const credential = EmailAuthProvider.credential(user.email, current);
+      await reauthenticateWithCredential(auth.currentUser, credential);
+      await updatePassword(auth.currentUser, newPass);
+      feedback.style.color = "green";
+      feedback.textContent = "Contraseña actualizada exitosamente.";
+    } catch (error) {
+      feedback.textContent =
+        "Error: " + (error.message || "no se pudo cambiar la contraseña.");
+    }
   };
 
   return (
@@ -110,7 +143,34 @@ const Configuracion = () => {
 
         {/* SEGURIDAD */}
         <TabPanel value={tabIndex} index={2}>
-          (Opciones de contraseña y seguridad)
+          <Typography variant="subtitle1" gutterBottom>
+            Cambiar contraseña
+          </Typography>
+
+          <Box
+            component="form"
+            sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 2 }}
+          >
+            <input
+              type="password"
+              placeholder="Contraseña actual"
+              id="currentPassword"
+            />
+            <input
+              type="password"
+              placeholder="Nueva contraseña"
+              id="newPassword"
+            />
+            <input
+              type="password"
+              placeholder="Confirmar nueva contraseña"
+              id="confirmPassword"
+            />
+            <Button variant="contained" onClick={handleChangePassword}>
+              Guardar nueva contraseña
+            </Button>
+            <Typography id="passwordFeedback" variant="body2" color="error" />
+          </Box>
         </TabPanel>
 
         {/* NOTIFICACIONES */}
