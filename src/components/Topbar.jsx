@@ -11,10 +11,12 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const Topbar = () => {
   const { user, logout } = useAuth();
   const [anchorEl, setAnchorEl] = useState(null);
+  const navigate = useNavigate();
 
   const initials = user?.email?.[0]?.toUpperCase() || "U";
 
@@ -29,6 +31,11 @@ const Topbar = () => {
   const handleLogout = async () => {
     handleMenuClose();
     await logout();
+  };
+
+  const handleProfile = () => {
+    handleMenuClose();
+    navigate("/perfil");
   };
 
   return (
@@ -53,6 +60,7 @@ const Topbar = () => {
             onClose={handleMenuClose}
           >
             <MenuItem disabled>{user?.email}</MenuItem>
+            <MenuItem onClick={handleProfile}>Perfil</MenuItem>
             <MenuItem onClick={handleLogout}>Cerrar sesión</MenuItem>
           </Menu>
         </Box>
