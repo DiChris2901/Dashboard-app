@@ -7,6 +7,10 @@ import {
   Typography,
   Paper,
   Button,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 import { useThemeMode } from "../contexts/ThemeContext";
 
@@ -20,7 +24,14 @@ const TabPanel = ({ children, value, index }) => {
 
 const Configuracion = () => {
   const [tabIndex, setTabIndex] = useState(0);
-  const { mode, toggleTheme, fontSize, updateFontSize } = useThemeMode();
+  const {
+    mode,
+    toggleTheme,
+    fontSize,
+    updateFontSize,
+    fontFamily,
+    updateFontFamily,
+  } = useThemeMode();
 
   const handleChange = (event, newValue) => {
     setTabIndex(newValue);
@@ -40,10 +51,12 @@ const Configuracion = () => {
           <Tab label="Notificaciones" />
         </Tabs>
 
+        {/* PERFIL */}
         <TabPanel value={tabIndex} index={0}>
           (Aquí va la configuración del perfil)
         </TabPanel>
 
+        {/* TEMA VISUAL */}
         <TabPanel value={tabIndex} index={1}>
           <Typography variant="subtitle1" gutterBottom>
             Tema actual: {mode === "light" ? "Claro ☀️" : "Oscuro 🌙"}
@@ -55,7 +68,7 @@ const Configuracion = () => {
           <Typography variant="subtitle1" gutterBottom>
             Tamaño de letra:
           </Typography>
-          <Box sx={{ display: "flex", gap: 1 }}>
+          <Box sx={{ display: "flex", gap: 1, mb: 3 }}>
             <Button
               variant={fontSize === "small" ? "contained" : "outlined"}
               onClick={() => updateFontSize("small")}
@@ -75,12 +88,32 @@ const Configuracion = () => {
               Grande
             </Button>
           </Box>
+
+          <Typography variant="subtitle1" gutterBottom>
+            Fuente tipográfica:
+          </Typography>
+          <FormControl fullWidth>
+            <InputLabel>Fuente</InputLabel>
+            <Select
+              value={fontFamily}
+              label="Fuente"
+              onChange={(e) => updateFontFamily(e.target.value)}
+            >
+              <MenuItem value="Roboto">Roboto</MenuItem>
+              <MenuItem value="Open Sans">Open Sans</MenuItem>
+              <MenuItem value="Inter">Inter</MenuItem>
+              <MenuItem value="Montserrat">Montserrat</MenuItem>
+              <MenuItem value="Source Sans Pro">Source Sans Pro</MenuItem>
+            </Select>
+          </FormControl>
         </TabPanel>
 
+        {/* SEGURIDAD */}
         <TabPanel value={tabIndex} index={2}>
           (Opciones de contraseña y seguridad)
         </TabPanel>
 
+        {/* NOTIFICACIONES */}
         <TabPanel value={tabIndex} index={3}>
           (Activación de notificaciones)
         </TabPanel>
