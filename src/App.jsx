@@ -3,7 +3,8 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
-import Configuracion from "./pages/Configuracion"; // ✅ Nueva página
+import Configuracion from "./pages/Configuracion";
+import Dashboard from "./pages/Dashboard"; // ✅ Nuevo import
 
 import PrivateRoute from "./components/PrivateRoute";
 import MainLayout from "./layouts/MainLayout";
@@ -25,7 +26,8 @@ const App = () => {
       >
         <Route index element={<Home />} />
         <Route path="perfil" element={<Profile />} />
-        <Route path="configuracion" element={<Configuracion />} /> {/* ✅ Nueva ruta */}
+        <Route path="configuracion" element={<Configuracion />} />
+        <Route path="dashboard" element={<Dashboard />} /> {/* ✅ Nueva ruta */}
       </Route>
 
       {/* Redirección para rutas no válidas */}

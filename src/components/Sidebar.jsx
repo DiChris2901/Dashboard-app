@@ -10,6 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
+import DashboardIcon from "@mui/icons-material/Dashboard";
 import { useNavigate } from "react-router-dom";
 
 const drawerWidth = 240;
@@ -43,6 +44,15 @@ const Sidebar = () => {
               <HomeIcon />
             </ListItemIcon>
             <ListItemText primary="Inicio" />
+          </ListItemButton>
+        </ListItem>
+
+        <ListItem disablePadding>
+          <ListItemButton onClick={() => navigate("/dashboard")}>
+            <ListItemIcon>
+              <DashboardIcon />
+            </ListItemIcon>
+            <ListItemText primary="Resumen" />
           </ListItemButton>
         </ListItem>
       </List>
