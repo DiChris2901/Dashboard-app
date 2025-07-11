@@ -33,9 +33,14 @@ const Topbar = () => {
     await logout();
   };
 
-  const handleProfile = () => {
+  const goToPerfil = () => {
     handleMenuClose();
     navigate("/perfil");
+  };
+
+  const goToConfiguracion = () => {
+    handleMenuClose();
+    navigate("/configuracion");
   };
 
   return (
@@ -60,7 +65,8 @@ const Topbar = () => {
             onClose={handleMenuClose}
           >
             <MenuItem disabled>{user?.email}</MenuItem>
-            <MenuItem onClick={handleProfile}>Perfil</MenuItem>
+            <MenuItem onClick={goToPerfil}>Perfil</MenuItem>
+            <MenuItem onClick={goToConfiguracion}>Configuración</MenuItem>
             <MenuItem onClick={handleLogout}>Cerrar sesión</MenuItem>
           </Menu>
         </Box>
