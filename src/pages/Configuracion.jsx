@@ -6,7 +6,9 @@ import {
   Tab,
   Typography,
   Paper,
+  Button,
 } from "@mui/material";
+import { useThemeMode } from "../contexts/ThemeContext";
 
 const TabPanel = ({ children, value, index }) => {
   return value === index ? (
@@ -18,6 +20,7 @@ const TabPanel = ({ children, value, index }) => {
 
 const Configuracion = () => {
   const [tabIndex, setTabIndex] = useState(0);
+  const { mode, toggleTheme, fontSize, updateFontSize } = useThemeMode();
 
   const handleChange = (event, newValue) => {
     setTabIndex(newValue);
@@ -42,7 +45,36 @@ const Configuracion = () => {
         </TabPanel>
 
         <TabPanel value={tabIndex} index={1}>
-          (Aquí irá la configuración de tema, fuente, tamaño)
+          <Typography variant="subtitle1" gutterBottom>
+            Tema actual: {mode === "light" ? "Claro ☀️" : "Oscuro 🌙"}
+          </Typography>
+          <Button variant="outlined" onClick={toggleTheme} sx={{ mb: 3 }}>
+            Cambiar tema
+          </Button>
+
+          <Typography variant="subtitle1" gutterBottom>
+            Tamaño de letra:
+          </Typography>
+          <Box sx={{ display: "flex", gap: 1 }}>
+            <Button
+              variant={fontSize === "small" ? "contained" : "outlined"}
+              onClick={() => updateFontSize("small")}
+            >
+              Pequeño
+            </Button>
+            <Button
+              variant={fontSize === "normal" ? "contained" : "outlined"}
+              onClick={() => updateFontSize("normal")}
+            >
+              Normal
+            </Button>
+            <Button
+              variant={fontSize === "large" ? "contained" : "outlined"}
+              onClick={() => updateFontSize("large")}
+            >
+              Grande
+            </Button>
+          </Box>
         </TabPanel>
 
         <TabPanel value={tabIndex} index={2}>
