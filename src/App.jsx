@@ -5,7 +5,8 @@ import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import Configuracion from "./pages/Configuracion";
 import Dashboard from "./pages/Dashboard";
-import AgregarCompromiso from "./pages/AgregarCompromiso"; // ✅ nuevo
+import AgregarCompromiso from "./pages/AgregarCompromiso";
+import MostrarData from "./pages/MostrarData"; // ✅ nuevo
 
 import PrivateRoute from "./components/PrivateRoute";
 import MainLayout from "./layouts/MainLayout";
@@ -29,7 +30,8 @@ const App = () => {
         <Route path="perfil" element={<Profile />} />
         <Route path="configuracion" element={<Configuracion />} />
         <Route path="dashboard" element={<Dashboard />} />
-        <Route path="agregar-compromiso" element={<AgregarCompromiso />} /> {/* ✅ nueva */}
+        <Route path="agregar-compromiso" element={<AgregarCompromiso />} />
+        <Route path="mostrar-data" element={<MostrarData />} /> {/* ✅ nueva ruta */}
       </Route>
 
       {/* Redirección para rutas no válidas */}
