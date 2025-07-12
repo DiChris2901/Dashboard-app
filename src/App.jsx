@@ -4,7 +4,8 @@ import Login from "./pages/Login";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import Configuracion from "./pages/Configuracion";
-import Dashboard from "./pages/Dashboard"; // ✅ Nuevo import
+import Dashboard from "./pages/Dashboard";
+import AgregarCompromiso from "./pages/AgregarCompromiso"; // ✅ nuevo
 
 import PrivateRoute from "./components/PrivateRoute";
 import MainLayout from "./layouts/MainLayout";
@@ -27,7 +28,8 @@ const App = () => {
         <Route index element={<Home />} />
         <Route path="perfil" element={<Profile />} />
         <Route path="configuracion" element={<Configuracion />} />
-        <Route path="dashboard" element={<Dashboard />} /> {/* ✅ Nueva ruta */}
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="agregar-compromiso" element={<AgregarCompromiso />} /> {/* ✅ nueva */}
       </Route>
 
       {/* Redirección para rutas no válidas */}
