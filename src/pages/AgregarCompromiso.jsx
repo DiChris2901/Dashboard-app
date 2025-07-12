@@ -56,15 +56,59 @@ const AgregarCompromiso = () => {
     setForm({ ...form, [field]: value });
   };
 
+  const calcularMeses = (inicio, intervalo) => {
+    const startIndex = meses.indexOf(inicio);
+    const result = [];
+    for (let i = startIndex; i < 12; i += intervalo) {
+      result.push(meses[i]);
+    }
+    return result;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const docData = {
-      ...form,
+    const { periodicidad, mes, ...rest } = form;
+    const base = {
+      ...rest,
       valor: parseFloat(form.valor),
       createdAt: new Date(),
     };
-    await addDoc(collection(db, "compromisos"), docData);
-    alert("Compromiso guardado correctamente");
+
+    let mesesAGenerar = [mes];
+
+    switch (periodicidad) {
+      case "Mensual":
+        mesesAGenerar = calcularMeses(mes, 1);
+        break;
+      case "Bimensual":
+        mesesAGenerar = calcularMeses(mes, 2);
+        break;
+      case "Trimestral":
+        mesesAGenerar = calcularMeses(mes, 3);
+        break;
+      case "Cuatrimestral":
+        mesesAGenerar = calcularMeses(mes, 4);
+        break;
+      case "Semestral":
+        mesesAGenerar = calcularMeses(mes, 6);
+        break;
+      case "Anual":
+        mesesAGenerar = [mes];
+        break;
+      default:
+        mesesAGenerar = [mes];
+    }
+
+    for (const m of mesesAGenerar) {
+      await addDoc(collection(db, "compromisos"), {
+        ...base,
+        mes: m,
+        periodicidad,
+      });
+    }
+
+    alert(`Se guardaron ${mesesAGenerar.length} compromiso(s) correctamente`);
+
     setForm({
       empresa: "",
       mes: "",
