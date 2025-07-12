@@ -68,10 +68,12 @@ const AgregarCompromiso = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const { periodicidad, mes, ...rest } = form;
+    const now = new Date();
     const base = {
       ...rest,
       valor: parseFloat(form.valor),
-      createdAt: new Date(),
+      createdAt: now,
+      año: now.getFullYear(),
     };
 
     let mesesAGenerar = [mes];
