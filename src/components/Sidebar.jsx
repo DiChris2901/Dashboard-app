@@ -13,6 +13,8 @@ import HomeIcon from "@mui/icons-material/Home";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import TableChartIcon from "@mui/icons-material/TableChart";
+import PaymentIcon from "@mui/icons-material/Payment"; // ✅ nuevo ícono
+
 import { useNavigate } from "react-router-dom";
 
 const drawerWidth = 240;
@@ -73,6 +75,15 @@ const Sidebar = () => {
               <TableChartIcon />
             </ListItemIcon>
             <ListItemText primary="Mostrar Data" />
+          </ListItemButton>
+        </ListItem>
+
+        <ListItem disablePadding>
+          <ListItemButton onClick={() => navigate("/agregar-pago")}>
+            <ListItemIcon>
+              <PaymentIcon />
+            </ListItemIcon>
+            <ListItemText primary="Agregar Pago" />
           </ListItemButton>
         </ListItem>
       </List>

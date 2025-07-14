@@ -6,7 +6,8 @@ import Profile from "./pages/Profile";
 import Configuracion from "./pages/Configuracion";
 import Dashboard from "./pages/Dashboard";
 import AgregarCompromiso from "./pages/AgregarCompromiso";
-import MostrarData from "./pages/MostrarData"; // ✅ nuevo
+import MostrarData from "./pages/MostrarData";
+import AgregarPago from "./pages/AgregarPago"; // ✅ nueva vista
 
 import PrivateRoute from "./components/PrivateRoute";
 import MainLayout from "./layouts/MainLayout";
@@ -31,7 +32,8 @@ const App = () => {
         <Route path="configuracion" element={<Configuracion />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="agregar-compromiso" element={<AgregarCompromiso />} />
-        <Route path="mostrar-data" element={<MostrarData />} /> {/* ✅ nueva ruta */}
+        <Route path="mostrar-data" element={<MostrarData />} />
+        <Route path="agregar-pago" element={<AgregarPago />} /> {/* ✅ nueva ruta */}
       </Route>
 
       {/* Redirección para rutas no válidas */}
