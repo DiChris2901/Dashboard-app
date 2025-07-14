@@ -13,7 +13,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import TableChartIcon from "@mui/icons-material/TableChart";
-import PaymentIcon from "@mui/icons-material/Payment"; // ✅ nuevo ícono
+import PaymentIcon from "@mui/icons-material/Payment";
 
 import { useNavigate } from "react-router-dom";
 
@@ -61,20 +61,20 @@ const Sidebar = () => {
         </ListItem>
 
         <ListItem disablePadding>
-          <ListItemButton onClick={() => navigate("/agregar-compromiso")}>
-            <ListItemIcon>
-              <AddBoxIcon />
-            </ListItemIcon>
-            <ListItemText primary="Agregar Compromiso" />
-          </ListItemButton>
-        </ListItem>
-
-        <ListItem disablePadding>
           <ListItemButton onClick={() => navigate("/mostrar-data")}>
             <ListItemIcon>
               <TableChartIcon />
             </ListItemIcon>
             <ListItemText primary="Mostrar Data" />
+          </ListItemButton>
+        </ListItem>
+
+        <ListItem disablePadding>
+          <ListItemButton onClick={() => navigate("/agregar-compromiso")}>
+            <ListItemIcon>
+              <AddBoxIcon />
+            </ListItemIcon>
+            <ListItemText primary="Agregar Compromiso" />
           </ListItemButton>
         </ListItem>
 

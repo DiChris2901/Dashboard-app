@@ -1,3 +1,4 @@
+// src/pages/AgregarPago.jsx
 import {
   Box,
   Button,
@@ -61,7 +62,16 @@ const AgregarPago = () => {
   };
 
   const handleChange = (campo) => (e) => {
-    setPago({ ...pago, [campo]: e.target.value });
+    const valor = e.target.value;
+    let nuevoPago = { ...pago, [campo]: valor };
+
+    if (campo === "intereses" || campo === "valor") {
+      const val = parseFloat(nuevoPago.valor) || 0;
+      const int = parseFloat(nuevoPago.intereses) || 0;
+      nuevoPago.valor_final = (val + int).toFixed(2);
+    }
+
+    setPago(nuevoPago);
   };
 
   const handleGuardar = async () => {
@@ -125,7 +135,7 @@ const AgregarPago = () => {
               label="Valor final pagado"
               fullWidth
               value={pago.valor_final}
-              onChange={handleChange("valor_final")}
+              disabled
               type="number"
               sx={{ mb: 2 }}
             />
