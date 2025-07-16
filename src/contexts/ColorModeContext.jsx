@@ -7,7 +7,7 @@ export const ColorModeProvider = ({ children }) => {
   const [mode, setMode] = useState("light");
 
   const toggleColorMode = () => {
-    setMode((prev) => (prev === "light" ? "dark" : "light"));
+    setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
   };
 
   const theme = useMemo(
@@ -32,12 +32,21 @@ export const ColorModeProvider = ({ children }) => {
         typography: {
           fontFamily: `"Public Sans", sans-serif`,
         },
+        components: {
+          MuiAppBar: {
+            styleOverrides: {
+              root: {
+                backgroundImage: "none",
+              },
+            },
+          },
+        },
       }),
     [mode]
   );
 
   return (
-    <ColorModeContext.Provider value={{ toggleColorMode }}>
+    <ColorModeContext.Provider value={{ toggleColorMode, theme }}>
       <ThemeProvider theme={theme}>{children}</ThemeProvider>
     </ColorModeContext.Provider>
   );
