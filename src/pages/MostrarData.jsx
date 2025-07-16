@@ -4,6 +4,7 @@ import {
   Card,
   CardContent,
   Grid,
+  IconButton,
   MenuItem,
   Table,
   TableBody,
@@ -13,20 +14,24 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { Edit, Delete } from "@mui/icons-material";
 import { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { db } from "../firebase";
+import EditarCompromiso from "../components/EditarCompromiso";
 
 const MostrarData = () => {
   const [compromisos, setCompromisos] = useState([]);
   const [empresaList, setEmpresaList] = useState([]);
   const [inputEmpresa, setInputEmpresa] = useState("");
-
   const [filtro, setFiltro] = useState({
     empresa: "",
     mes: "",
     concepto: "",
   });
+
+  const [openEditar, setOpenEditar] = useState(false);
+  const [compromisoSeleccionado, setCompromisoSeleccionado] = useState(null);
 
   const meses = [
     { nombre: "Enero", valor: "01" },
@@ -74,6 +79,18 @@ const MostrarData = () => {
     );
   });
 
+  const handleEliminar = async (id) => {
+    if (window.confirm("¿Estás seguro de eliminar este compromiso?")) {
+      await deleteDoc(doc(db, "compromisos", id));
+      fetchCompromisos();
+    }
+  };
+
+  const handleEditar = (compromiso) => {
+    setCompromisoSeleccionado(compromiso);
+    setOpenEditar(true);
+  };
+
   return (
     <Box sx={{ p: 3 }}>
       <Card>
@@ -93,12 +110,7 @@ const MostrarData = () => {
                   setFiltro({ ...filtro, empresa: newInputValue });
                 }}
                 renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Empresa"
-                    fullWidth
-                    sx={{ minWidth: 200 }}
-                  />
+                  <TextField {...params} label="Empresa" fullWidth sx={{ minWidth: 200 }} />
                 )}
               />
             </Grid>
@@ -144,6 +156,7 @@ const MostrarData = () => {
                 <TableCell>Valor</TableCell>
                 <TableCell>Método</TableCell>
                 <TableCell>Aplazado</TableCell>
+                <TableCell>Acciones</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -156,12 +169,23 @@ const MostrarData = () => {
                   <TableCell>${c.valor?.toLocaleString()}</TableCell>
                   <TableCell>{c.metodoPago}</TableCell>
                   <TableCell>{c.aplazado ? "Sí" : "No"}</TableCell>
+                  <TableCell>
+                    <IconButton onClick={() => handleEditar(c)}><Edit /></IconButton>
+                    <IconButton onClick={() => handleEliminar(c.id)}><Delete /></IconButton>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </CardContent>
       </Card>
+
+      <EditarCompromiso
+        open={openEditar}
+        onClose={() => setOpenEditar(false)}
+        compromiso={compromisoSeleccionado}
+        onSave={fetchCompromisos}
+      />
     </Box>
   );
 };
