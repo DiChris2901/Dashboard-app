@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import HomeIcon from "@mui/icons-material/Home";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import AddBoxIcon from "@mui/icons-material/AddBox";
+import TableViewIcon from "@mui/icons-material/TableView";
 
 const drawerWidth = 240;
 
@@ -47,6 +48,11 @@ const Sidebar = () => {
           <ListItemButton onClick={() => navigate("/agregar-compromiso")}>
             <ListItemIcon><AddBoxIcon /></ListItemIcon>
             <ListItemText primary="Agregar Compromiso" />
+          </ListItemButton>
+
+          <ListItemButton onClick={() => navigate("/mostrar-data")}>
+            <ListItemIcon><TableViewIcon /></ListItemIcon>
+            <ListItemText primary="Mostrar Data" />
           </ListItemButton>
         </List>
       </Box>

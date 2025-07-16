@@ -70,12 +70,13 @@ const AgregarCompromiso = () => {
   };
 
   const handleGuardar = async () => {
+    const mesNumerico = meses.find((m) => m.nombre === formData.mes)?.valor;
     const repeticiones =
       periodicidades[formData.periodicidad] === 0
         ? 1
         : 12 / periodicidades[formData.periodicidad];
 
-    const baseMonth = dayjs(`${currentYear}-${formData.mes}-01`);
+    const baseMonth = dayjs(`${currentYear}-${mesNumerico}-01`);
 
     try {
       for (let i = 0; i < repeticiones; i++) {
@@ -106,7 +107,7 @@ const AgregarCompromiso = () => {
       });
     } catch (error) {
       console.error("Error al guardar:", error);
-      alert("Hubo un error al guardar el compromiso.");
+      alert(`Hubo un error al guardar el compromiso.\n${error.message}`);
     }
   };
 
@@ -124,10 +125,10 @@ const AgregarCompromiso = () => {
     cargarEmpresas();
   }, []);
 
-return (
-  <Box sx={{ p: 3, display: "flex", justifyContent: "center" }}>
-    <Card sx={{ width: "100%", maxWidth: 800 }}>
-      <CardContent>
+  return (
+    <Box sx={{ p: 3, display: "flex", justifyContent: "center" }}>
+      <Card sx={{ width: "100%", maxWidth: 800 }}>
+        <CardContent>
           <Typography variant="h5" gutterBottom>
             Agregar Compromiso
           </Typography>
@@ -152,7 +153,7 @@ return (
             margin="normal"
           >
             {meses.map((mes) => (
-              <MenuItem key={mes.valor} value={mes.valor}>
+              <MenuItem key={mes.valor} value={mes.nombre}>
                 {mes.nombre}
               </MenuItem>
             ))}
