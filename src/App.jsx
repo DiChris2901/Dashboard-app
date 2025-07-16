@@ -7,6 +7,7 @@ import MainLayout from "./layouts/MainLayout";
 import Inicio from "./pages/Inicio";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import AgregarCompromiso from "./pages/AgregarCompromiso";
 import PrivateRoute from "./components/PrivateRoute";
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
         >
           <Route index element={<Inicio />} />
           <Route path="dashboard" element={<Dashboard />} />
+          <Route path="agregar-compromiso" element={<AgregarCompromiso />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" />} />

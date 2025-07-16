@@ -1,15 +1,17 @@
 import {
+  Box,
   Drawer,
   List,
   ListItemButton,
   ListItemIcon,
   ListItemText,
   Toolbar,
-  Box,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+
 import HomeIcon from "@mui/icons-material/Home";
 import DashboardIcon from "@mui/icons-material/Dashboard";
+import AddBoxIcon from "@mui/icons-material/AddBox";
 
 const drawerWidth = 240;
 
@@ -19,6 +21,7 @@ const Sidebar = () => {
   return (
     <Drawer
       variant="permanent"
+      anchor="left"
       sx={{
         width: drawerWidth,
         flexShrink: 0,
@@ -35,9 +38,15 @@ const Sidebar = () => {
             <ListItemIcon><HomeIcon /></ListItemIcon>
             <ListItemText primary="Inicio" />
           </ListItemButton>
+
           <ListItemButton onClick={() => navigate("/dashboard")}>
             <ListItemIcon><DashboardIcon /></ListItemIcon>
             <ListItemText primary="Resumen" />
+          </ListItemButton>
+
+          <ListItemButton onClick={() => navigate("/agregar-compromiso")}>
+            <ListItemIcon><AddBoxIcon /></ListItemIcon>
+            <ListItemText primary="Agregar Compromiso" />
           </ListItemButton>
         </List>
       </Box>
