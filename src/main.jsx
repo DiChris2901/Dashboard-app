@@ -3,13 +3,16 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import { ColorModeProvider } from "./contexts/ColorModeContext";
+import { AuthProvider } from "./contexts/AuthContext";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <ColorModeProvider>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
+      <AuthProvider>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </AuthProvider>
     </ColorModeProvider>
   </React.StrictMode>
 );
