@@ -9,6 +9,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import AgregarCompromiso from "./pages/AgregarCompromiso";
 import MostrarData from "./pages/MostrarData";
+import AgregarPago from "./pages/AgregarPago";
 import PrivateRoute from "./components/PrivateRoute";
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="agregar-compromiso" element={<AgregarCompromiso />} />
           <Route path="mostrar-data" element={<MostrarData />} />
+          <Route path="agregar-pago" element={<AgregarPago />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" />} />

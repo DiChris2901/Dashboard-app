@@ -13,6 +13,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import TableViewIcon from "@mui/icons-material/TableView";
+import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 
 const drawerWidth = 240;
 
@@ -53,6 +54,11 @@ const Sidebar = () => {
           <ListItemButton onClick={() => navigate("/mostrar-data")}>
             <ListItemIcon><TableViewIcon /></ListItemIcon>
             <ListItemText primary="Mostrar Data" />
+          </ListItemButton>
+
+          <ListItemButton onClick={() => navigate("/agregar-pago")}>
+            <ListItemIcon><MonetizationOnIcon /></ListItemIcon>
+            <ListItemText primary="Agregar Pago" />
           </ListItemButton>
         </List>
       </Box>
