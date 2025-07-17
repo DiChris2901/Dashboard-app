@@ -6,6 +6,7 @@ import {
   MenuItem,
   TextField,
   Typography,
+  Alert,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import {
@@ -13,7 +14,10 @@ import {
   getDocs,
   doc,
   addDoc,
+  updateDoc,
   getDoc,
+  query,
+  where,
 } from "firebase/firestore";
 import { db } from "../firebase";
 
@@ -21,6 +25,10 @@ const AgregarPago = () => {
   const [compromisos, setCompromisos] = useState([]);
   const [compromisoId, setCompromisoId] = useState("");
   const [compromisoSeleccionado, setCompromisoSeleccionado] = useState(null);
+  const [pagoExistente, setPagoExistente] = useState(null);
+  const [pagoDocId, setPagoDocId] = useState(null); // nuevo
+
+  const [valorOriginal, setValorOriginal] = useState(0);
   const [intereses, setIntereses] = useState("");
   const [total, setTotal] = useState("");
 
@@ -33,6 +41,23 @@ const AgregarPago = () => {
     setCompromisos(lista);
   };
 
+  const fetchPagoExistente = async (id) => {
+    const q = query(collection(db, "pagos"), where("compromisoId", "==", id));
+    const snap = await getDocs(q);
+    if (!snap.empty) {
+      const pago = snap.docs[0].data();
+      setPagoExistente(pago);
+      setPagoDocId(snap.docs[0].id); // importante
+      setIntereses(pago.intereses);
+      setValorOriginal(pago.valorOriginal);
+    } else {
+      setPagoExistente(null);
+      setPagoDocId(null);
+      setIntereses("");
+      setTotal("");
+    }
+  };
+
   const handleSelectChange = async (e) => {
     const id = e.target.value;
     setCompromisoId(id);
@@ -42,35 +67,49 @@ const AgregarPago = () => {
     if (snap.exists()) {
       const data = snap.data();
       setCompromisoSeleccionado(data);
-      setIntereses("");
-      setTotal(parseFloat(data.valor));
+      if (!pagoExistente) setValorOriginal(parseFloat(data.valor) || 0);
+      await fetchPagoExistente(id);
     }
   };
 
   const handleInteresesChange = (e) => {
     const valor = e.target.value;
     setIntereses(valor);
-    const interesesNum = parseFloat(valor) || 0;
-    const valorOriginal = parseFloat(compromisoSeleccionado?.valor || 0);
-    setTotal(valorOriginal + interesesNum);
   };
+
+  useEffect(() => {
+    const interesesNum = parseFloat(intereses) || 0;
+    setTotal(valorOriginal + interesesNum);
+  }, [intereses, valorOriginal]);
 
   const handleGuardar = async () => {
     if (!compromisoId || !compromisoSeleccionado) return alert("Selecciona un compromiso válido.");
 
     try {
-      await addDoc(collection(db, "pagos"), {
+      const data = {
         compromisoId,
-        valorOriginal: compromisoSeleccionado.valor,
+        valorOriginal,
         intereses: parseFloat(intereses) || 0,
         valorFinal: total,
         fechaRegistro: new Date(),
-      });
-      alert("Pago registrado correctamente.");
+      };
+
+      if (pagoDocId) {
+        await updateDoc(doc(db, "pagos", pagoDocId), data);
+        alert("Pago actualizado correctamente.");
+      } else {
+        await addDoc(collection(db, "pagos"), data);
+        alert("Pago registrado correctamente.");
+      }
+
+      // limpiar estado
       setCompromisoId("");
       setCompromisoSeleccionado(null);
+      setPagoExistente(null);
+      setPagoDocId(null);
       setIntereses("");
       setTotal("");
+      setValorOriginal(0);
     } catch (error) {
       console.error("Error al guardar el pago:", error);
       alert("Error al guardar el pago.");
@@ -88,6 +127,12 @@ const AgregarPago = () => {
           <Typography variant="h5" gutterBottom>
             Agregar Pago
           </Typography>
+
+          {pagoExistente && (
+            <Alert severity="warning" sx={{ mb: 2 }}>
+              Este compromiso ya tiene un pago registrado. Puedes corregirlo si fue un error.
+            </Alert>
+          )}
 
           <TextField
             select
@@ -109,7 +154,7 @@ const AgregarPago = () => {
             label="Valor a cancelar"
             fullWidth
             margin="normal"
-            value={compromisoSeleccionado?.valor || ""}
+            value={valorOriginal}
             disabled
           />
 
@@ -133,7 +178,7 @@ const AgregarPago = () => {
 
           <Box sx={{ textAlign: "right", mt: 3 }}>
             <Button variant="contained" onClick={handleGuardar}>
-              Guardar Pago
+              {pagoDocId ? "Actualizar Pago" : "Guardar Pago"}
             </Button>
           </Box>
         </CardContent>
