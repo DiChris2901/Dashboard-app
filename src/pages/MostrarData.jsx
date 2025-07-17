@@ -16,14 +16,21 @@ import {
 } from "@mui/material";
 import { Edit, Delete } from "@mui/icons-material";
 import { useEffect, useState } from "react";
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
 import { db } from "../firebase";
 import EditarCompromiso from "../components/EditarCompromiso";
 
 const MostrarData = () => {
   const [compromisos, setCompromisos] = useState([]);
+  const [pagos, setPagos] = useState([]);
   const [empresaList, setEmpresaList] = useState([]);
   const [inputEmpresa, setInputEmpresa] = useState("");
+
   const [filtro, setFiltro] = useState({
     empresa: "",
     mes: "",
@@ -55,20 +62,31 @@ const MostrarData = () => {
     });
   };
 
-  const fetchCompromisos = async () => {
-    const querySnapshot = await getDocs(collection(db, "compromisos"));
-    const data = querySnapshot.docs.map((doc) => ({
+  const fetchData = async () => {
+    const compromisosSnap = await getDocs(collection(db, "compromisos"));
+    const pagosSnap = await getDocs(collection(db, "pagos"));
+
+    const compromisosData = compromisosSnap.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));
 
-    const empresasUnicas = [...new Set(data.map((d) => d.empresa).filter(Boolean))];
+    const pagosData = pagosSnap.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    const empresasUnicas = [
+      ...new Set(compromisosData.map((d) => d.empresa).filter(Boolean)),
+    ];
+
+    setCompromisos(compromisosData);
+    setPagos(pagosData);
     setEmpresaList(empresasUnicas);
-    setCompromisos(data);
   };
 
   useEffect(() => {
-    fetchCompromisos();
+    fetchData();
   }, []);
 
   const compromisosFiltrados = compromisos.filter((c) => {
@@ -79,10 +97,13 @@ const MostrarData = () => {
     );
   });
 
+  const getPagoDeCompromiso = (compromisoId) =>
+    pagos.find((p) => p.compromisoId === compromisoId);
+
   const handleEliminar = async (id) => {
     if (window.confirm("¿Estás seguro de eliminar este compromiso?")) {
       await deleteDoc(doc(db, "compromisos", id));
-      fetchCompromisos();
+      fetchData();
     }
   };
 
@@ -154,27 +175,36 @@ const MostrarData = () => {
                 <TableCell>Beneficiario</TableCell>
                 <TableCell>Concepto</TableCell>
                 <TableCell>Valor</TableCell>
-                <TableCell>Método</TableCell>
+                <TableCell>Intereses</TableCell>
+                <TableCell>Total Cancelado</TableCell>
                 <TableCell>Aplazado</TableCell>
                 <TableCell>Acciones</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {compromisosFiltrados.map((c) => (
-                <TableRow key={c.id}>
-                  <TableCell>{c.empresa}</TableCell>
-                  <TableCell>{c.mes}</TableCell>
-                  <TableCell>{c.beneficiario}</TableCell>
-                  <TableCell>{c.concepto}</TableCell>
-                  <TableCell>${c.valor?.toLocaleString()}</TableCell>
-                  <TableCell>{c.metodoPago}</TableCell>
-                  <TableCell>{c.aplazado ? "Sí" : "No"}</TableCell>
-                  <TableCell>
-                    <IconButton onClick={() => handleEditar(c)}><Edit /></IconButton>
-                    <IconButton onClick={() => handleEliminar(c.id)}><Delete /></IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {compromisosFiltrados.map((c) => {
+                const pago = getPagoDeCompromiso(c.id);
+                return (
+                  <TableRow key={c.id}>
+                    <TableCell>{c.empresa}</TableCell>
+                    <TableCell>{c.mes}</TableCell>
+                    <TableCell>{c.beneficiario}</TableCell>
+                    <TableCell>{c.concepto}</TableCell>
+                    <TableCell>${c.valor?.toLocaleString()}</TableCell>
+                    <TableCell>
+                      {pago?.intereses !== undefined ? `$${pago.intereses}` : "—"}
+                    </TableCell>
+                    <TableCell>
+                      {pago?.valorFinal !== undefined ? `$${pago.valorFinal}` : "—"}
+                    </TableCell>
+                    <TableCell>{c.aplazado ? "Sí" : "No"}</TableCell>
+                    <TableCell>
+                      <IconButton onClick={() => handleEditar(c)}><Edit /></IconButton>
+                      <IconButton onClick={() => handleEliminar(c.id)}><Delete /></IconButton>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </CardContent>
@@ -184,7 +214,7 @@ const MostrarData = () => {
         open={openEditar}
         onClose={() => setOpenEditar(false)}
         compromiso={compromisoSeleccionado}
-        onSave={fetchCompromisos}
+        onSave={fetchData}
       />
     </Box>
   );
