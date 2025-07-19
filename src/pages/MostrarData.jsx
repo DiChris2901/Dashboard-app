@@ -5,7 +5,7 @@ import {
   doc,
   deleteDoc
 } from "firebase/firestore";
-import { db } from "../firebaseConfig";
+import { db } from "../firebase";
 import {
   Card,
   Typography,

@@ -1,49 +1,42 @@
-import { useContext } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
-import { CssBaseline, ThemeProvider } from "@mui/material";
-import { ColorModeContext } from "./contexts/ColorModeContext";
-import { useAuth } from "./contexts/AuthContext";
-import MainLayout from "./layouts/MainLayout";
-import Inicio from "./pages/Inicio";
-import Login from "./pages/Login";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import AgregarCompromiso from "./pages/AgregarCompromiso";
 import MostrarData from "./pages/MostrarData";
 import AgregarPago from "./pages/AgregarPago";
-import PrivateRoute from "./components/PrivateRoute";
+import Configuracion from "./pages/Configuracion";
+import Login from "./pages/Login";
+import Layout from "./layouts/Layout"; // Tu layout base con Sidebar + Topbar
 
-function App() {
-  const { theme } = useContext(ColorModeContext);
-  const { user } = useAuth();
+const PrivateRoute = ({ children }) => {
+  const isAuthenticated = !!localStorage.getItem("user"); // ejemplo básico, usa context o firebase
+  return isAuthenticated ? children : <Navigate to="/login" />;
+};
 
+const App = () => {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
+    <Router>
       <Routes>
-        <Route
-          path="/login"
-          element={user ? <Navigate to="/" replace /> : <Login />}
-        />
+        <Route path="/login" element={<Login />} />
 
         <Route
           path="/"
           element={
             <PrivateRoute>
-              <MainLayout />
+              <Layout />
             </PrivateRoute>
           }
         >
-          <Route index element={<Inicio />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="agregar-compromiso" element={<AgregarCompromiso />} />
           <Route path="mostrar-data" element={<MostrarData />} />
           <Route path="agregar-pago" element={<AgregarPago />} />
+          <Route path="configuracion" element={<Configuracion />} />
+          <Route index element={<Navigate to="dashboard" />} />
         </Route>
-
-        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
-    </ThemeProvider>
+    </Router>
   );
-}
+};
 
 export default App;

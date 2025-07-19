@@ -27,9 +27,14 @@ const Topbar = () => {
       position="fixed"
       elevation={0}
       color="inherit"
-      sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, bgcolor: "#fff" }}
+      sx={{
+        width: "calc(100% - 250px)",
+        ml: "250px",
+        zIndex: (theme) => theme.zIndex.drawer + 1,
+        bgcolor: "#fff",
+      }}
     >
-      <Toolbar sx={{ justifyContent: "space-between" }}>
+      <Toolbar sx={{ justifyContent: "space-between", pl: 3 }}>
         <Typography variant="h6" fontWeight="bold">
           DR Dashboard
         </Typography>

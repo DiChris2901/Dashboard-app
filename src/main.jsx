@@ -7,12 +7,11 @@ import { AuthProvider } from "./contexts/AuthContext";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <ColorModeProvider>
-      <AuthProvider>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </AuthProvider>
-    </ColorModeProvider>
+<ColorModeProvider>
+  <AuthProvider>
+    <App />
+  </AuthProvider>
+</ColorModeProvider>
+
   </React.StrictMode>
 );

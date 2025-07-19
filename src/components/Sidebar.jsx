@@ -1,68 +1,81 @@
+import React from "react";
+import { NavLink } from "react-router-dom";
 import {
   Box,
-  Drawer,
   List,
+  ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Toolbar,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-
 import HomeIcon from "@mui/icons-material/Home";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import AddBoxIcon from "@mui/icons-material/AddBox";
-import TableViewIcon from "@mui/icons-material/TableView";
-import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
-
-const drawerWidth = 240;
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import PaymentIcon from "@mui/icons-material/Payment";
+import SettingsIcon from "@mui/icons-material/Settings";
+import ListAltIcon from "@mui/icons-material/ListAlt";
 
 const Sidebar = () => {
-  const navigate = useNavigate();
-
   return (
-    <Drawer
-      variant="permanent"
-      anchor="left"
-      sx={{
-        width: drawerWidth,
-        flexShrink: 0,
-        [`& .MuiDrawer-paper`]: {
-          width: drawerWidth,
-          boxSizing: "border-box",
-        },
-      }}
-    >
-      <Toolbar />
-      <Box sx={{ overflow: "auto" }}>
-        <List>
-          <ListItemButton onClick={() => navigate("/")}>
-            <ListItemIcon><HomeIcon /></ListItemIcon>
+    <Box sx={{ width: 250, bgcolor: "#f4f6f8", height: "100vh" }}>
+      <List>
+
+        <ListItem disablePadding>
+          <ListItemButton component={NavLink} to="/dashboard">
+            <ListItemIcon>
+              <HomeIcon />
+            </ListItemIcon>
             <ListItemText primary="Inicio" />
           </ListItemButton>
+        </ListItem>
 
-          <ListItemButton onClick={() => navigate("/dashboard")}>
-            <ListItemIcon><DashboardIcon /></ListItemIcon>
+        <ListItem disablePadding>
+          <ListItemButton component={NavLink} to="/dashboard">
+            <ListItemIcon>
+              <DashboardIcon />
+            </ListItemIcon>
             <ListItemText primary="Resumen" />
           </ListItemButton>
+        </ListItem>
 
-          <ListItemButton onClick={() => navigate("/agregar-compromiso")}>
-            <ListItemIcon><AddBoxIcon /></ListItemIcon>
+        <ListItem disablePadding>
+          <ListItemButton component={NavLink} to="/agregar-compromiso">
+            <ListItemIcon>
+              <AssignmentIcon />
+            </ListItemIcon>
             <ListItemText primary="Agregar Compromiso" />
           </ListItemButton>
+        </ListItem>
 
-          <ListItemButton onClick={() => navigate("/mostrar-data")}>
-            <ListItemIcon><TableViewIcon /></ListItemIcon>
+        <ListItem disablePadding>
+          <ListItemButton component={NavLink} to="/mostrar-data">
+            <ListItemIcon>
+              <ListAltIcon />
+            </ListItemIcon>
             <ListItemText primary="Mostrar Data" />
           </ListItemButton>
+        </ListItem>
 
-          <ListItemButton onClick={() => navigate("/agregar-pago")}>
-            <ListItemIcon><MonetizationOnIcon /></ListItemIcon>
+        <ListItem disablePadding>
+          <ListItemButton component={NavLink} to="/agregar-pago">
+            <ListItemIcon>
+              <PaymentIcon />
+            </ListItemIcon>
             <ListItemText primary="Agregar Pago" />
           </ListItemButton>
-        </List>
-      </Box>
-    </Drawer>
+        </ListItem>
+
+        <ListItem disablePadding>
+          <ListItemButton component={NavLink} to="/configuracion">
+            <ListItemIcon>
+              <SettingsIcon />
+            </ListItemIcon>
+            <ListItemText primary="Configuración" />
+          </ListItemButton>
+        </ListItem>
+
+      </List>
+    </Box>
   );
 };
 
