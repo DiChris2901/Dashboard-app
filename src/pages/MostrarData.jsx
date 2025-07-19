@@ -24,11 +24,14 @@ import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ModalComprobante from "../components/ModalComprobante";
+import ModalEditarCompromiso from "../components/ModalEditarCompromiso";
 
 const MostrarData = () => {
   const [filtrados, setFiltrados] = useState([]);
   const [filtros, setFiltros] = useState({ empresa: "", mes: "", concepto: "" });
   const [comprobanteUrl, setComprobanteUrl] = useState(null);
+  const [openEdit, setOpenEdit] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
 
   useEffect(() => {
     const compromisosMap = new Map();
@@ -87,7 +90,8 @@ const MostrarData = () => {
   };
 
   const handleEdit = (item) => {
-    console.log("Editar:", item);
+    setSelectedItem(item);
+    setOpenEdit(true);
   };
 
   const handleDelete = async (item) => {
@@ -210,6 +214,14 @@ const MostrarData = () => {
         </TableBody>
       </Table>
       <ModalComprobante url={comprobanteUrl} onClose={() => setComprobanteUrl(null)} />
+      <ModalEditarCompromiso
+        open={openEdit}
+        data={selectedItem}
+        onClose={() => {
+          setOpenEdit(false);
+          setSelectedItem(null);
+        }}
+      />
     </Card>
   );
 };
