@@ -28,15 +28,14 @@ const Topbar = () => {
       elevation={0}
       color="inherit"
       sx={{
-        width: "calc(100% - 250px)",
-        ml: "250px",
+        width: "100%",
         zIndex: (theme) => theme.zIndex.drawer + 1,
         bgcolor: "#fff",
       }}
     >
       <Toolbar sx={{ justifyContent: "space-between", pl: 3 }}>
         <Typography variant="h6" fontWeight="bold">
-          DR Dashboard
+          DR Dashboard Control Financiero
         </Typography>
 
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
