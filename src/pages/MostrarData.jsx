@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { collection, onSnapshot, doc, getDoc, deleteDoc } from "firebase/firestore";
+import {
+  collection,
+  onSnapshot,
+  doc,
+  deleteDoc
+} from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import {
   Card,
@@ -26,62 +31,54 @@ const MostrarData = () => {
   const [comprobanteUrl, setComprobanteUrl] = useState(null);
 
   useEffect(() => {
-    let unsubscribeCompromisos;
-    let unsubscribePagos;
+    const compromisosMap = new Map();
+    const pagosMap = new Map();
 
-    const fetchData = async () => {
-      const compromisosRef = collection(db, "compromisos");
-      const pagosRef = collection(db, "pagos");
+    const compromisosRef = collection(db, "compromisos");
+    const pagosRef = collection(db, "pagos");
 
-      const compromisosMap = new Map();
-      const pagosMap = new Map();
+    const unsubscribeCompromisos = onSnapshot(compromisosRef, (snapshot) => {
+      compromisosMap.clear();
+      snapshot.docs.forEach((doc) => {
+        compromisosMap.set(doc.id, { compromisoId: doc.id, ...doc.data() });
+      });
+      mergeData();
+    });
 
-      unsubscribeCompromisos = onSnapshot(compromisosRef, (snapshot) => {
-        snapshot.docs.forEach((doc) => {
-          compromisosMap.set(doc.id, { id: doc.id, ...doc.data() });
-        });
+    const unsubscribePagos = onSnapshot(pagosRef, (snapshot) => {
+      pagosMap.clear();
+      snapshot.docs.forEach((doc) => {
+        const data = doc.data();
+        pagosMap.set(data.compromisoId, { pagoId: doc.id, ...data });
+      });
+      mergeData();
+    });
 
-        if (pagosMap.size > 0) mergeData();
+    const mergeData = () => {
+      const merged = [];
+
+      compromisosMap.forEach((comp, id) => {
+        const pago = pagosMap.get(id);
+        if (pago) {
+          merged.push({
+            ...comp,
+            ...pago,
+            tienePago: true,
+          });
+        } else {
+          merged.push({
+            ...comp,
+            tienePago: false,
+          });
+        }
       });
 
-      unsubscribePagos = onSnapshot(pagosRef, (snapshot) => {
-        pagosMap.clear();
-        snapshot.docs.forEach((doc) => {
-          const data = doc.data();
-          pagosMap.set(data.compromisoId, { id: doc.id, ...data });
-        });
-
-        if (compromisosMap.size > 0) mergeData();
-      });
-
-      const mergeData = () => {
-        const merged = [];
-
-        compromisosMap.forEach((comp, id) => {
-          const pago = pagosMap.get(id);
-          if (pago) {
-            merged.push({
-              ...comp,
-              ...pago,
-              tienePago: true,
-            });
-          } else {
-            merged.push({
-              ...comp,
-              tienePago: false,
-            });
-          }
-        });
-
-        setFiltrados(merged);
-      };
+      setFiltrados(merged);
     };
 
-    fetchData();
-
     return () => {
-      if (unsubscribeCompromisos) unsubscribeCompromisos();
-      if (unsubscribePagos) unsubscribePagos();
+      unsubscribeCompromisos();
+      unsubscribePagos();
     };
   }, []);
 
@@ -91,22 +88,29 @@ const MostrarData = () => {
 
   const handleEdit = (item) => {
     console.log("Editar:", item);
-    // Aquí puedes abrir un modal o navegar a otra ruta
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm("¿Estás seguro de eliminar este registro?")) {
-      await deleteDoc(doc(db, "compromisos", id));
+  const handleDelete = async (item) => {
+    if (!window.confirm("¿Eliminar este compromiso y su pago (si existe)?")) return;
+
+    try {
+      if (item.compromisoId) {
+        await deleteDoc(doc(db, "compromisos", item.compromisoId));
+      }
+      if (item.pagoId) {
+        await deleteDoc(doc(db, "pagos", item.pagoId));
+      }
+      console.log("Eliminado correctamente");
+    } catch (error) {
+      console.error("Error eliminando:", error);
     }
   };
 
-  const datosFiltrados = filtrados.filter((item) => {
-    return (
-      item.empresa?.toLowerCase().includes(filtros.empresa) &&
-      item.mes?.toLowerCase().includes(filtros.mes) &&
-      item.concepto?.toLowerCase().includes(filtros.concepto)
-    );
-  });
+  const datosFiltrados = filtrados.filter((item) =>
+    item.empresa?.toLowerCase().includes(filtros.empresa) &&
+    item.mes?.toLowerCase().includes(filtros.mes) &&
+    item.concepto?.toLowerCase().includes(filtros.concepto)
+  );
 
   return (
     <Card className="p-4">
@@ -170,7 +174,7 @@ const MostrarData = () => {
         </TableHead>
         <TableBody>
           {datosFiltrados.map((item) => (
-            <TableRow key={item.id}>
+            <TableRow key={item.compromisoId}>
               <TableCell>{item.empresa}</TableCell>
               <TableCell>{item.mes}</TableCell>
               <TableCell>{item.concepto}</TableCell>
@@ -196,7 +200,7 @@ const MostrarData = () => {
                   </IconButton>
                 </Tooltip>
                 <Tooltip title="Eliminar">
-                  <IconButton onClick={() => handleDelete(item.id)}>
+                  <IconButton onClick={() => handleDelete(item)}>
                     <DeleteIcon />
                   </IconButton>
                 </Tooltip>
