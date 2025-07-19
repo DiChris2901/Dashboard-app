@@ -1,222 +1,151 @@
+// ✅ MostrarData.jsx - versión corregida sin duplicados
+
+import React, { useEffect, useState } from "react";
+import { collection, onSnapshot, doc, getDoc } from "firebase/firestore";
+import { db } from "../firebaseConfig";
 import {
-  Autocomplete,
-  Box,
   Card,
   CardContent,
-  Grid,
+  Typography,
+  TextField,
+  InputAdornment,
   IconButton,
-  MenuItem,
   Table,
-  TableBody,
-  TableCell,
   TableHead,
   TableRow,
-  TextField,
-  Typography,
+  TableCell,
+  TableBody,
 } from "@mui/material";
-import { Edit, Delete } from "@mui/icons-material";
-import { useEffect, useState } from "react";
-import {
-  collection,
-  getDocs,
-  deleteDoc,
-  doc,
-} from "firebase/firestore";
-import { db } from "../firebase";
-import EditarCompromiso from "../components/EditarCompromiso";
+import SearchIcon from "@mui/icons-material/Search";
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
+import ModalComprobante from "../components/ModalComprobante";
 
 const MostrarData = () => {
-  const [compromisos, setCompromisos] = useState([]);
-  const [pagos, setPagos] = useState([]);
-  const [empresaList, setEmpresaList] = useState([]);
-  const [inputEmpresa, setInputEmpresa] = useState("");
-
-  const [filtro, setFiltro] = useState({
-    empresa: "",
-    mes: "",
-    concepto: "",
-  });
-
-  const [openEditar, setOpenEditar] = useState(false);
-  const [compromisoSeleccionado, setCompromisoSeleccionado] = useState(null);
-
-  const meses = [
-    { nombre: "Enero", valor: "01" },
-    { nombre: "Febrero", valor: "02" },
-    { nombre: "Marzo", valor: "03" },
-    { nombre: "Abril", valor: "04" },
-    { nombre: "Mayo", valor: "05" },
-    { nombre: "Junio", valor: "06" },
-    { nombre: "Julio", valor: "07" },
-    { nombre: "Agosto", valor: "08" },
-    { nombre: "Septiembre", valor: "09" },
-    { nombre: "Octubre", valor: "10" },
-    { nombre: "Noviembre", valor: "11" },
-    { nombre: "Diciembre", valor: "12" },
-  ];
-
-  const handleChange = (e) => {
-    setFiltro({
-      ...filtro,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const fetchData = async () => {
-    const compromisosSnap = await getDocs(collection(db, "compromisos"));
-    const pagosSnap = await getDocs(collection(db, "pagos"));
-
-    const compromisosData = compromisosSnap.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-
-    const pagosData = pagosSnap.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-
-    const empresasUnicas = [
-      ...new Set(compromisosData.map((d) => d.empresa).filter(Boolean)),
-    ];
-
-    setCompromisos(compromisosData);
-    setPagos(pagosData);
-    setEmpresaList(empresasUnicas);
-  };
+  const [filtrados, setFiltrados] = useState([]);
+  const [filtros, setFiltros] = useState({ empresa: "", mes: "", concepto: "" });
+  const [comprobanteUrl, setComprobanteUrl] = useState(null);
 
   useEffect(() => {
+    let unsubscribeCompromisos;
+    let unsubscribePagos;
+
+    const fetchData = async () => {
+      const compromisosRef = collection(db, "compromisos");
+      const pagosRef = collection(db, "pagos");
+
+      const compromisosMap = new Map();
+      const pagosMap = new Map();
+
+      unsubscribeCompromisos = onSnapshot(compromisosRef, (snapshot) => {
+        snapshot.docs.forEach((doc) => {
+          compromisosMap.set(doc.id, { id: doc.id, ...doc.data() });
+        });
+
+        if (pagosMap.size > 0) mergeData();
+      });
+
+      unsubscribePagos = onSnapshot(pagosRef, (snapshot) => {
+        pagosMap.clear();
+        snapshot.docs.forEach((doc) => {
+          const data = doc.data();
+          pagosMap.set(data.compromisoId, { id: doc.id, ...data });
+        });
+
+        if (compromisosMap.size > 0) mergeData();
+      });
+
+      const mergeData = () => {
+        const merged = [];
+
+        compromisosMap.forEach((comp, id) => {
+          const pago = pagosMap.get(id);
+          if (pago) {
+            merged.push({
+              ...comp,
+              ...pago,
+              tienePago: true,
+            });
+          } else {
+            merged.push({
+              ...comp,
+              tienePago: false,
+            });
+          }
+        });
+
+        setFiltrados(merged);
+      };
+    };
+
     fetchData();
+
+    return () => {
+      if (unsubscribeCompromisos) unsubscribeCompromisos();
+      if (unsubscribePagos) unsubscribePagos();
+    };
   }, []);
 
-  const compromisosFiltrados = compromisos.filter((c) => {
+  const handleFiltroChange = (campo) => (e) => {
+    setFiltros((prev) => ({ ...prev, [campo]: e.target.value.toLowerCase() }));
+  };
+
+  const datosFiltrados = filtrados.filter((item) => {
     return (
-      (filtro.empresa === "" || c.empresa?.toLowerCase().includes(filtro.empresa.toLowerCase())) &&
-      (filtro.concepto === "" || c.concepto?.toLowerCase().includes(filtro.concepto.toLowerCase())) &&
-      (filtro.mes === "" || (c.mes && c.mes.split("-")[1] === filtro.mes))
+      item.empresa?.toLowerCase().includes(filtros.empresa) &&
+      item.mes?.toLowerCase().includes(filtros.mes) &&
+      item.concepto?.toLowerCase().includes(filtros.concepto)
     );
   });
 
-  const getPagoDeCompromiso = (compromisoId) =>
-    pagos.find((p) => p.compromisoId === compromisoId);
-
-  const handleEliminar = async (id) => {
-    if (window.confirm("¿Estás seguro de eliminar este compromiso?")) {
-      await deleteDoc(doc(db, "compromisos", id));
-      fetchData();
-    }
-  };
-
-  const handleEditar = (compromiso) => {
-    setCompromisoSeleccionado(compromiso);
-    setOpenEditar(true);
-  };
-
   return (
-    <Box sx={{ p: 3 }}>
-      <Card>
-        <CardContent>
-          <Typography variant="h5" gutterBottom>
-            Mostrar Compromisos
-          </Typography>
-
-          <Grid container spacing={2} sx={{ mb: 3 }}>
-            <Grid item xs={12} sm={4}>
-              <Autocomplete
-                freeSolo
-                options={empresaList}
-                inputValue={inputEmpresa}
-                onInputChange={(event, newInputValue) => {
-                  setInputEmpresa(newInputValue);
-                  setFiltro({ ...filtro, empresa: newInputValue });
-                }}
-                renderInput={(params) => (
-                  <TextField {...params} label="Empresa" fullWidth sx={{ minWidth: 200 }} />
-                )}
-              />
-            </Grid>
-
-            <Grid item xs={12} sm={4}>
-              <TextField
-                select
-                label="Mes"
-                name="mes"
-                value={filtro.mes}
-                onChange={handleChange}
-                fullWidth
-                sx={{ minWidth: 200 }}
-              >
-                <MenuItem value="">Todos</MenuItem>
-                {meses.map((mes) => (
-                  <MenuItem key={mes.valor} value={mes.valor}>
-                    {mes.nombre}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-
-            <Grid item xs={12} sm={4}>
-              <TextField
-                label="Concepto"
-                name="concepto"
-                value={filtro.concepto}
-                onChange={handleChange}
-                fullWidth
-                sx={{ minWidth: 200 }}
-              />
-            </Grid>
-          </Grid>
-
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Empresa</TableCell>
-                <TableCell>Mes</TableCell>
-                <TableCell>Beneficiario</TableCell>
-                <TableCell>Concepto</TableCell>
-                <TableCell>Valor</TableCell>
-                <TableCell>Intereses</TableCell>
-                <TableCell>Total Cancelado</TableCell>
-                <TableCell>Aplazado</TableCell>
-                <TableCell>Acciones</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {compromisosFiltrados.map((c) => {
-                const pago = getPagoDeCompromiso(c.id);
-                return (
-                  <TableRow key={c.id}>
-                    <TableCell>{c.empresa}</TableCell>
-                    <TableCell>{c.mes}</TableCell>
-                    <TableCell>{c.beneficiario}</TableCell>
-                    <TableCell>{c.concepto}</TableCell>
-                    <TableCell>${c.valor?.toLocaleString()}</TableCell>
-                    <TableCell>
-                      {pago?.intereses !== undefined ? `$${pago.intereses}` : "—"}
-                    </TableCell>
-                    <TableCell>
-                      {pago?.valorFinal !== undefined ? `$${pago.valorFinal}` : "—"}
-                    </TableCell>
-                    <TableCell>{c.aplazado ? "Sí" : "No"}</TableCell>
-                    <TableCell>
-                      <IconButton onClick={() => handleEditar(c)}><Edit /></IconButton>
-                      <IconButton onClick={() => handleEliminar(c.id)}><Delete /></IconButton>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-
-      <EditarCompromiso
-        open={openEditar}
-        onClose={() => setOpenEditar(false)}
-        compromiso={compromisoSeleccionado}
-        onSave={fetchData}
-      />
-    </Box>
+    <Card className="p-4">
+      <Typography variant="h5" gutterBottom>
+        Mostrar Data
+      </Typography>
+      <div className="flex flex-wrap gap-2 mb-4">
+        <TextField label="Empresa" value={filtros.empresa} onChange={handleFiltroChange("empresa")} size="small"
+          InputProps={{ endAdornment: (<InputAdornment position="end"><SearchIcon /></InputAdornment>) }} />
+        <TextField label="Mes" value={filtros.mes} onChange={handleFiltroChange("mes")} size="small"
+          InputProps={{ endAdornment: (<InputAdornment position="end"><SearchIcon /></InputAdornment>) }} />
+        <TextField label="Concepto" value={filtros.concepto} onChange={handleFiltroChange("concepto")} size="small"
+          InputProps={{ endAdornment: (<InputAdornment position="end"><SearchIcon /></InputAdornment>) }} />
+      </div>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell><b>Empresa</b></TableCell>
+            <TableCell><b>Mes</b></TableCell>
+            <TableCell><b>Concepto</b></TableCell>
+            <TableCell><b>Valor</b></TableCell>
+            <TableCell><b>Valor a cancelar</b></TableCell>
+            <TableCell><b>Intereses</b></TableCell>
+            <TableCell><b>Valor cancelado</b></TableCell>
+            <TableCell><b>Comprobante</b></TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {datosFiltrados.map((item) => (
+            <TableRow key={item.id}>
+              <TableCell>{item.empresa}</TableCell>
+              <TableCell>{item.mes}</TableCell>
+              <TableCell>{item.concepto}</TableCell>
+              <TableCell>${item.valor?.toLocaleString() || "-"}</TableCell>
+              <TableCell>{item.valorOriginal ? `$${item.valorOriginal.toLocaleString()}` : "-"}</TableCell>
+              <TableCell>{item.intereses ? `$${item.intereses.toLocaleString()}` : "-"}</TableCell>
+              <TableCell>{item.valorFinal ? `$${item.valorFinal.toLocaleString()}` : "-"}</TableCell>
+              <TableCell>
+                {item.comprobanteUrl ? (
+                  <IconButton onClick={() => setComprobanteUrl(item.comprobanteUrl)}>
+                    <PictureAsPdfIcon />
+                  </IconButton>
+                ) : ("-")}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      <ModalComprobante url={comprobanteUrl} onClose={() => setComprobanteUrl(null)} />
+    </Card>
   );
 };
 
