@@ -127,7 +127,7 @@ const AgregarCompromiso = () => {
 
   return (
     <Box sx={{ p: 3, display: "flex", justifyContent: "center" }}>
-      <Card sx={{ width: "100%", maxWidth: 800 }}>
+      <Card sx={{ width: "100%", maxWidth: 600 }}>
         <CardContent>
           <Typography variant="h5" gutterBottom>
             Agregar Compromiso

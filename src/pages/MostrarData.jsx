@@ -1,11 +1,8 @@
-// ✅ MostrarData.jsx - versión corregida sin duplicados
-
 import React, { useEffect, useState } from "react";
-import { collection, onSnapshot, doc, getDoc } from "firebase/firestore";
+import { collection, onSnapshot, doc, getDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import {
   Card,
-  CardContent,
   Typography,
   TextField,
   InputAdornment,
@@ -15,9 +12,12 @@ import {
   TableRow,
   TableCell,
   TableBody,
+  Tooltip,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import ModalComprobante from "../components/ModalComprobante";
 
 const MostrarData = () => {
@@ -89,6 +89,17 @@ const MostrarData = () => {
     setFiltros((prev) => ({ ...prev, [campo]: e.target.value.toLowerCase() }));
   };
 
+  const handleEdit = (item) => {
+    console.log("Editar:", item);
+    // Aquí puedes abrir un modal o navegar a otra ruta
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm("¿Estás seguro de eliminar este registro?")) {
+      await deleteDoc(doc(db, "compromisos", id));
+    }
+  };
+
   const datosFiltrados = filtrados.filter((item) => {
     return (
       item.empresa?.toLowerCase().includes(filtros.empresa) &&
@@ -103,12 +114,45 @@ const MostrarData = () => {
         Mostrar Data
       </Typography>
       <div className="flex flex-wrap gap-2 mb-4">
-        <TextField label="Empresa" value={filtros.empresa} onChange={handleFiltroChange("empresa")} size="small"
-          InputProps={{ endAdornment: (<InputAdornment position="end"><SearchIcon /></InputAdornment>) }} />
-        <TextField label="Mes" value={filtros.mes} onChange={handleFiltroChange("mes")} size="small"
-          InputProps={{ endAdornment: (<InputAdornment position="end"><SearchIcon /></InputAdornment>) }} />
-        <TextField label="Concepto" value={filtros.concepto} onChange={handleFiltroChange("concepto")} size="small"
-          InputProps={{ endAdornment: (<InputAdornment position="end"><SearchIcon /></InputAdornment>) }} />
+        <TextField
+          label="Empresa"
+          value={filtros.empresa}
+          onChange={handleFiltroChange("empresa")}
+          size="small"
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+        />
+        <TextField
+          label="Mes"
+          value={filtros.mes}
+          onChange={handleFiltroChange("mes")}
+          size="small"
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+        />
+        <TextField
+          label="Concepto"
+          value={filtros.concepto}
+          onChange={handleFiltroChange("concepto")}
+          size="small"
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+        />
       </div>
       <Table>
         <TableHead>
@@ -121,6 +165,7 @@ const MostrarData = () => {
             <TableCell><b>Intereses</b></TableCell>
             <TableCell><b>Valor cancelado</b></TableCell>
             <TableCell><b>Comprobante</b></TableCell>
+            <TableCell><b>Acciones</b></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -135,10 +180,26 @@ const MostrarData = () => {
               <TableCell>{item.valorFinal ? `$${item.valorFinal.toLocaleString()}` : "-"}</TableCell>
               <TableCell>
                 {item.comprobanteUrl ? (
-                  <IconButton onClick={() => setComprobanteUrl(item.comprobanteUrl)}>
-                    <PictureAsPdfIcon />
+                  <Tooltip title="Ver comprobante">
+                    <IconButton onClick={() => setComprobanteUrl(item.comprobanteUrl)}>
+                      <PictureAsPdfIcon />
+                    </IconButton>
+                  </Tooltip>
+                ) : (
+                  "-"
+                )}
+              </TableCell>
+              <TableCell>
+                <Tooltip title="Editar">
+                  <IconButton onClick={() => handleEdit(item)}>
+                    <EditIcon />
                   </IconButton>
-                ) : ("-")}
+                </Tooltip>
+                <Tooltip title="Eliminar">
+                  <IconButton onClick={() => handleDelete(item.id)}>
+                    <DeleteIcon />
+                  </IconButton>
+                </Tooltip>
               </TableCell>
             </TableRow>
           ))}
