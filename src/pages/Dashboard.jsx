@@ -10,6 +10,7 @@ import {
   Divider,
   TextField,
   MenuItem,
+  Alert,
 } from "@mui/material";
 
 const meses = [
@@ -24,6 +25,8 @@ const Dashboard = () => {
 
   const [empresas, setEmpresas] = useState([]);
   const [conceptos, setConceptos] = useState([]);
+
+  const mesActual = new Date().toLocaleString("es-CO", { month: "long" });
 
   useEffect(() => {
     const unsub1 = onSnapshot(collection(db, "compromisos"), (snap) => {
@@ -72,6 +75,10 @@ const Dashboard = () => {
   const valorTotalPagado = pagosFiltrados.reduce((sum, p) => sum + (p.valorCancelado || 0), 0);
   const valorPendiente = valorTotalComprometido - valorTotalPagado;
 
+  const pendientesEsteMes = pagosPendientes.filter(
+    (c) => c.mes?.toLowerCase() === mesActual.toLowerCase()
+  );
+
   const handleFiltroChange = (campo) => (e) => {
     setFiltros({ ...filtros, [campo]: e.target.value });
   };
@@ -82,8 +89,18 @@ const Dashboard = () => {
         Bienvenido 👋
       </Typography>
       <Typography variant="body1" gutterBottom>
-        Hoy es <b>19 de July de 2025</b> — resumen según tus filtros:
+        Hoy es <b>{new Date().toLocaleDateString("es-CO", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</b>
       </Typography>
+
+      {pendientesEsteMes.length > 0 ? (
+        <Alert severity="warning" sx={{ my: 2 }}>
+          ⚠️ Tienes {pendientesEsteMes.length} compromiso(s) pendiente(s) para este mes ({mesActual}).
+        </Alert>
+      ) : (
+        <Alert severity="success" sx={{ my: 2 }}>
+          ✅ No tienes compromisos pendientes para el mes actual ({mesActual}).
+        </Alert>
+      )}
 
       <Divider sx={{ my: 2 }} />
 
@@ -131,63 +148,52 @@ const Dashboard = () => {
         </TextField>
       </Box>
 
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={4}>
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={6} md={4} lg={2}>
           <Card sx={{ bgcolor: "#e3f2fd" }}>
             <CardContent>
-              <Typography variant="h6">Compromisos registrados</Typography>
-              <Typography variant="h4">{compromisosFiltrados.length}</Typography>
+              <Typography variant="subtitle2">Compromisos registrados</Typography>
+              <Typography variant="h5">{compromisosFiltrados.length}</Typography>
             </CardContent>
           </Card>
         </Grid>
-
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} sm={6} md={4} lg={2}>
           <Card sx={{ bgcolor: "#c8e6c9" }}>
             <CardContent>
-              <Typography variant="h6">Pagos realizados</Typography>
-              <Typography variant="h4">{pagosFiltrados.length}</Typography>
+              <Typography variant="subtitle2">Pagos realizados</Typography>
+              <Typography variant="h5">{pagosFiltrados.length}</Typography>
             </CardContent>
           </Card>
         </Grid>
-
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} sm={6} md={4} lg={2}>
           <Card sx={{ bgcolor: "#fff9c4" }}>
             <CardContent>
-              <Typography variant="h6">Pagos pendientes</Typography>
-              <Typography variant="h4">{pagosPendientes.length}</Typography>
+              <Typography variant="subtitle2">Pagos pendientes</Typography>
+              <Typography variant="h5">{pagosPendientes.length}</Typography>
             </CardContent>
           </Card>
         </Grid>
-
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} sm={6} md={4} lg={2}>
           <Card sx={{ bgcolor: "#ede7f6" }}>
             <CardContent>
-              <Typography variant="h6">Valor comprometido</Typography>
-              <Typography variant="h5">
-                ${valorTotalComprometido.toLocaleString("es-CO")}
-              </Typography>
+              <Typography variant="subtitle2">Valor comprometido</Typography>
+              <Typography variant="h5">${valorTotalComprometido.toLocaleString("es-CO")}</Typography>
             </CardContent>
           </Card>
         </Grid>
-
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} sm={6} md={4} lg={2}>
           <Card sx={{ bgcolor: "#dcedc8" }}>
             <CardContent>
-              <Typography variant="h6">Valor pagado</Typography>
-              <Typography variant="h5">
-                ${valorTotalPagado.toLocaleString("es-CO")}
-              </Typography>
+              <Typography variant="subtitle2">Valor pagado</Typography>
+              <Typography variant="h5">${valorTotalPagado.toLocaleString("es-CO")}</Typography>
             </CardContent>
           </Card>
         </Grid>
-
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} sm={6} md={4} lg={2}>
           <Card sx={{ bgcolor: "#ffcdd2" }}>
             <CardContent>
-              <Typography variant="h6">Valor pendiente</Typography>
-              <Typography variant="h5">
-                ${valorPendiente.toLocaleString("es-CO")}
-              </Typography>
+              <Typography variant="subtitle2">Valor pendiente</Typography>
+              <Typography variant="h5">${valorPendiente.toLocaleString("es-CO")}</Typography>
             </CardContent>
           </Card>
         </Grid>
