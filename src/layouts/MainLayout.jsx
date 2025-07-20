@@ -1,16 +1,15 @@
 import { Outlet } from "react-router-dom";
-import { Box, Toolbar } from "@mui/material";
+import { Box } from "@mui/material";
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
 
 const MainLayout = () => {
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh" }}>
-      <Sidebar />
+    <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+      <Topbar />
 
-      <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
-        <Topbar />
-        <Toolbar /> {/* separador del AppBar */}
+      <Box sx={{ display: "flex", flexGrow: 1 }}>
+        <Sidebar />
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
           <Outlet />
         </Box>

@@ -7,12 +7,15 @@ import { Box } from "@mui/material";
 const Layout = () => {
   return (
     <>
+      {/* Topbar va por fuera */}
       <Topbar />
+
+      {/* Contenido principal con Sidebar */}
       <Box display="flex">
-        <Box sx={{ width: 250, mt: "64px" }}>
+        <Box sx={{ width: 250 }}>
           <Sidebar />
         </Box>
-        <Box component="main" sx={{ flexGrow: 1, mt: "64px", p: 3 }}>
+        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
           <Outlet />
         </Box>
       </Box>

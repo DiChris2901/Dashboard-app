@@ -1,14 +1,14 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import ThemeToggleButton from "./ThemeToggleButton";
-import UserAvatar from "./UserAvatar";
+import UserMenu from "./UserMenu";
 
 const Topbar = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex justify-between items-center px-6 py-4 bg-white dark:bg-gray-900 shadow-md">
-      {/* Logo o nombre de la app */}
+    <div className="w-full flex items-center justify-between px-6 py-4 bg-white dark:bg-gray-900 shadow-md ml-[250px]">
+      {/* Logo */}
       <div
         className="text-2xl font-bold cursor-pointer text-gray-800 dark:text-white"
         onClick={() => navigate("/")}
@@ -16,15 +16,10 @@ const Topbar = () => {
         DR Dashboard
       </div>
 
-      {/* Botones de acción */}
+      {/* Botones: tema + usuario */}
       <div className="flex items-center gap-4">
-        {/* Botón de tema claro/oscuro */}
         <ThemeToggleButton />
-
-        {/* Avatar del usuario */}
-        <div className="cursor-pointer" onClick={() => navigate("/configuracion")}>
-          <UserAvatar size={40} />
-        </div>
+        <UserMenu />
       </div>
     </div>
   );

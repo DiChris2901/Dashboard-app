@@ -5,7 +5,7 @@ import { db } from "../firebase";
 import { useAuth } from "../contexts/AuthContext";
 
 const UserAvatar = ({ size = 40 }) => {
-  const { currentUser } = useAuth();
+  const { user: currentUser } = useAuth(); // ✅ cambio aquí
   const [fotoURL, setFotoURL] = useState(null);
   const [nombre, setNombre] = useState("");
 

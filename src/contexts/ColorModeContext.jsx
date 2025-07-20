@@ -1,7 +1,10 @@
-import { createContext, useMemo, useState } from "react";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { createContext, useContext, useMemo, useState } from "react";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 
-export const ColorModeContext = createContext();
+const ColorModeContext = createContext();
+
+// ✅ Hook para acceder al context desde otros componentes
+export const useColorMode = () => useContext(ColorModeContext);
 
 export const ColorModeProvider = ({ children }) => {
   const [mode, setMode] = useState("light");
@@ -10,43 +13,26 @@ export const ColorModeProvider = ({ children }) => {
     setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
   };
 
+  // Creamos el tema de MUI con base en el modo
   const theme = useMemo(
     () =>
       createTheme({
         palette: {
           mode,
-          ...(mode === "light"
+          ...(mode === "dark"
             ? {
                 background: {
-                  default: "#f4f6f8",
-                  paper: "#ffffff",
+                  default: "#121212",
                 },
               }
-            : {
-                background: {
-                  default: "#121212",
-                  paper: "#1e1e1e",
-                },
-              }),
-        },
-        typography: {
-          fontFamily: `"Public Sans", sans-serif`,
-        },
-        components: {
-          MuiAppBar: {
-            styleOverrides: {
-              root: {
-                backgroundImage: "none",
-              },
-            },
-          },
+            : {}),
         },
       }),
     [mode]
   );
 
   return (
-    <ColorModeContext.Provider value={{ toggleColorMode, theme }}>
+    <ColorModeContext.Provider value={{ toggleColorMode }}>
       <ThemeProvider theme={theme}>{children}</ThemeProvider>
     </ColorModeContext.Provider>
   );

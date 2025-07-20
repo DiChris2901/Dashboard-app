@@ -6,16 +6,14 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true); // ✅ nuevo estado
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-      if (currentUser) {
-        localStorage.setItem("user", JSON.stringify(currentUser));
-      } else {
-        localStorage.removeItem("user");
-      }
+      setLoading(false); // ✅ ya terminó de verificar sesión
     });
+
     return () => unsub();
   }, []);
 
@@ -24,9 +22,11 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem("user");
     return signOut(auth);
   };
+
+  // 🔐 Protección durante carga
+  if (loading) return <div className="text-center mt-10">Cargando...</div>;
 
   return (
     <AuthContext.Provider value={{ user, login, logout }}>
