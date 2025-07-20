@@ -1,60 +1,28 @@
-import {
-  AppBar,
-  Box,
-  Toolbar,
-  Typography,
-  IconButton,
-  Avatar,
-  Menu,
-  MenuItem,
-} from "@mui/material";
-import ThemeToggle from "./ThemeToggle";
-import { useState } from "react";
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import ThemeToggleButton from "./ThemeToggleButton";
 
 const Topbar = () => {
-  const [anchorEl, setAnchorEl] = useState(null);
-
-  const handleMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
+  const navigate = useNavigate();
 
   return (
-    <AppBar
-      position="fixed"
-      elevation={0}
-      color="inherit"
-      sx={{
-        width: "100%",
-        zIndex: (theme) => theme.zIndex.drawer + 1,
-        bgcolor: "#fff",
-      }}
-    >
-      <Toolbar sx={{ justifyContent: "space-between", pl: 3 }}>
-        <Typography variant="h6" fontWeight="bold">
-          DR Dashboard Control Financiero
-        </Typography>
+    <div className="flex justify-between items-center px-6 py-4 bg-white dark:bg-gray-900 shadow-md">
+      {/* Logo o nombre de la app */}
+      <div
+        className="text-2xl font-bold cursor-pointer text-gray-800 dark:text-white"
+        onClick={() => navigate("/")}
+      >
+        DR Dashboard
+      </div>
 
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <ThemeToggle />
-          <IconButton onClick={handleMenuOpen}>
-            <Avatar alt="U" />
-          </IconButton>
-          <Menu
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleMenuClose}
-          >
-            <MenuItem disabled>Usuario</MenuItem>
-            <MenuItem>Perfil</MenuItem>
-            <MenuItem>Cerrar sesión</MenuItem>
-          </Menu>
-        </Box>
-      </Toolbar>
-    </AppBar>
+      {/* Botones de acción */}
+      <div className="flex items-center gap-4">
+        {/* Botón de tema claro/oscuro */}
+        <ThemeToggleButton />
+
+        {/* Aquí se puede agregar botón de usuario (Perfil, Configuración, Cerrar sesión) más adelante */}
+      </div>
+    </div>
   );
 };
 
