@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import ThemeToggleButton from "./ThemeToggleButton";
+import UserAvatar from "./UserAvatar";
 
 const Topbar = () => {
   const navigate = useNavigate();
@@ -20,7 +21,10 @@ const Topbar = () => {
         {/* Botón de tema claro/oscuro */}
         <ThemeToggleButton />
 
-        {/* Aquí se puede agregar botón de usuario (Perfil, Configuración, Cerrar sesión) más adelante */}
+        {/* Avatar del usuario */}
+        <div className="cursor-pointer" onClick={() => navigate("/configuracion")}>
+          <UserAvatar size={40} />
+        </div>
       </div>
     </div>
   );
